@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Stretch Film Price Calculator - Western Packaging</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .calculator {
+            background: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            width: 100%;
+            padding: 28px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+            
+            .calculator {
+                padding: 20px;
+                margin: 10px 0;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .header h1 {
+            color: #f1f5f9;
+            font-size: 22px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            display: block;
+            color: #cbd5e1;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            padding-right: 36px;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #0f172a;
+            color: #f1f5f9;
+            cursor: text;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #0f172a;
+            color: #f1f5f9;
+            -webkit-appearance: none;
+        }
+
+        input[type="number"]:disabled,
+        input[type="number"]:read-only {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #1e293b;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        input[type="number"]::placeholder {
+            color: #475569;
+        }
+
+        .unit {
+            position: absolute;
+            right: 10px;
+            color: #64748b;
+            font-size: 11px;
+            pointer-events: none;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        .range-info {
+            color: #64748b;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 8px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .result-value {
+            color: #f1f5f9;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .result-item.total {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border: none;
+        }
+
+        .result-item.total .result-label {
+            color: #dbeafe;
+            font-size: 13px;
+        }
+
+        .result-item.total .result-value {
+            color: white;
+            font-size: 20px;
+        }
+
+        .result-item.total .dual-currency {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .result-item.total .cad-price {
+            color: #bfdbfe;
+            font-size: 16px;
+        }
+
+        .fx-rate {
+            color: #64748b;
+            font-size: 10px;
+            text-align: right;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .error {
+            color: #ef4444;
+            font-size: 10px;
+            margin-top: 3px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background: #334155;
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .address-input {
+            position: relative;
+        }
+
+        .address-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .address-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 13px;
+            border-bottom: 1px solid #1e293b;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #1e293b;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-main {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .suggestion-sub {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .distance-info {
+            color: #3b82f6;
+            font-size: 11px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .settings-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            z-index: 1001;
+            transition: all 0.2s;
+        }
+
+        .settings-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+        }
+
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .settings-modal.show {
+            display: flex;
+        }
+
+        .settings-content {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 28px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .settings-header h2 {
+            color: #f1f5f9;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #334155;
+            color: #f1f5f9;
+        }
+
+        .freight-rate {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            background: #0f172a;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .freight-rate label {
+            color: #cbd5e1;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .freight-rate input {
+            padding: 8px 12px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #f1f5f9;
+            font-size: 14px;
+        }
+
+        .save-settings-btn {
+            width: 100%;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+
+        .save-settings-btn:hover {
+            background: #059669;
+        }
+
+        .reset-btn {
+            width: 100%;
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="header">
+            <h1>Stretch Film Calculator</h1>
+            <p>Western Packaging Solutions</p>
+        </div>
+
+        <form id="calculatorForm">
+            <div class="section-title">Roll Specifications</div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="height">Height</label>
+                    <div class="input-group">
+                        <input type="number" inputmode="decimal" id="height" min="12" max="30" step="1" placeholder="18">
+                        <span class="unit">"</span>
+                    </div>
+                    <div class="range-info">12-30"</div>
+                    <div class="error" id="heightError">12-30" only</div>
+                </div>
+
+                <div class="form-col">
+                    <label for="length">Length</label>
+                    <div class="input-group">
+                        <input type="number" inputmode="decimal" id="length" min="1000" max="9000" step="100" placeholder="5000">
+                        <span class="unit">ft</span>
+                    </div>
+                    <div class="range-info">1K-9K ft</div>
+                    <div class="error" id="lengthError">1K-9K only</div>
+                </div>
+
+                <div class="form-col">
+                    <label for="gauge">Gauge</label>
+                    <div class="input-group">
+                        <input type="number" inputmode="decimal" id="gauge" min="50" max="120" step="1" placeholder="80">
+                        <span class="unit">ga</span>
+                    </div>
+                    <div class="range-info">50-120 ga</div>
+                    <div class="error" id="gaugeError">50-120 only</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pricePerLb">Cost ($/lb)</label>
+                <div class="input-group">
+                    <input type="number" inputmode="decimal" id="pricePerLb" step="0.01" min="0.01" value="1.12">
+                    <span class="unit">$/lb</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="section-title">Pallet & Margin</div>
+
+            <div class="form-group">
+                <label for="clientAddress">Client Address (Canada)</label>
+                <div class="input-group address-input">
+                    <input type="text" id="clientAddress" placeholder="Type city name (e.g., Toronto, Vancouver)...">
+                    <div class="address-suggestions" id="addressSuggestions"></div>
+                </div>
+                <div class="distance-info" id="distanceInfo"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="rollsPerPallet">Rolls/Pallet</label>
+                    <div class="input-group">
+                        <input type="number" inputmode="decimal" id="rollsPerPallet" step="1" min="1" value="40">
+                        <span class="unit">rolls</span>
+                    </div>
+                </div>
+
+                <div class="form-col">
+                    <label for="freightCost">Freight/Pallet</label>
+                    <div class="input-group">
+                        <input type="number" inputmode="decimal" id="freightCost" step="0.01" min="0" value="0" placeholder="Auto">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+
+                <div class="form-col">
+                    <label for="desiredGP">Target GP/Pallet</label>
+                    <div class="input-group">
+                        <input type="number" inputmode="decimal" id="desiredGP" step="0.01" min="0" value="0" placeholder="0.00">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+        <div class="results" id="results">
+            <div class="result-item">
+                <span class="result-label">Roll Weight</span>
+                <span class="result-value" id="weightResult">—</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Your Cost (per roll)</span>
+                <span class="result-value" id="pickupPriceResult">—</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Cost per Pallet</span>
+                <span class="result-value" id="costPerPalletResult">—</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">+ Freight</span>
+                <span class="result-value" id="freightResult">—</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">+ Target GP</span>
+                <span class="result-value" id="gpResult">—</span>
+            </div>
+            <div class="result-item total">
+                <span class="result-label">QUOTE TO CUSTOMER (per roll)</span>
+                <div class="dual-currency">
+                    <span class="result-value" id="quotedPriceResult">—</span>
+                    <span class="cad-price" id="quotedPriceCAD">—</span>
+                </div>
+            </div>
+            <div class="fx-rate" id="fxRate">Loading exchange rate...</div>
+        </div>
+
+        <button class="settings-btn" id="settingsBtn">⚙️ Freight Settings</button>
+
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>Freight Rate Settings</h2>
+                    <button class="close-btn" id="closeSettings">×</button>
+                </div>
+
+                <div class="freight-rate">
+                    <label>100 - 399 km</label>
+                    <div class="input-group">
+                        <input type="number" id="rate1" step="1" min="0" value="200">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+
+                <div class="freight-rate">
+                    <label>400 - 799 km</label>
+                    <div class="input-group">
+                        <input type="number" id="rate2" step="1" min="0" value="300">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+
+                <div class="freight-rate">
+                    <label>800 - 1099 km</label>
+                    <div class="input-group">
+                        <input type="number" id="rate3" step="1" min="0" value="350">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+
+                <div class="freight-rate">
+                    <label>1100 - 1599 km</label>
+                    <div class="input-group">
+                        <input type="number" id="rate4" step="1" min="0" value="400">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+
+                <div class="freight-rate">
+                    <label>1600 - 2099 km</label>
+                    <div class="input-group">
+                        <input type="number" id="rate5" step="1" min="0" value="500">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+
+                <div class="freight-rate">
+                    <label>2100 - 3000 km</label>
+                    <div class="input-group">
+                        <input type="number" id="rate6" step="1" min="0" value="550">
+                        <span class="unit">$</span>
+                    </div>
+                </div>
+
+                <button class="save-settings-btn" id="saveSettings">Save Settings</button>
+                <button class="reset-btn" id="resetSettings">Reset to Defaults</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Input fields
+        const heightInput = document.getElementById('height');
+        const lengthInput = document.getElementById('length');
+        const gaugeInput = document.getElementById('gauge');
+        const pricePerLbInput = document.getElementById('pricePerLb');
+        const clientAddressInput = document.getElementById('clientAddress');
+        const addressSuggestions = document.getElementById('addressSuggestions');
+        const distanceInfo = document.getElementById('distanceInfo');
+        const freightCostInput = document.getElementById('freightCost');
+        const rollsPerPalletInput = document.getElementById('rollsPerPallet');
+        const desiredGPInput = document.getElementById('desiredGP');
+
+        // Error messages
+        const heightError = document.getElementById('heightError');
+        const lengthError = document.getElementById('lengthError');
+        const gaugeError = document.getElementById('gaugeError');
+
+        // Result displays
+        const weightResult = document.getElementById('weightResult');
+        const pickupPriceResult = document.getElementById('pickupPriceResult');
+        const costPerPalletResult = document.getElementById('costPerPalletResult');
+        const freightResult = document.getElementById('freightResult');
+        const gpResult = document.getElementById('gpResult');
+        const quotedPriceResult = document.getElementById('quotedPriceResult');
+        const quotedPriceCAD = document.getElementById('quotedPriceCAD');
+        const fxRateDisplay = document.getElementById('fxRate');
+
+        // FX rate storage
+        let usdToCAD = null;
+        
+        // Warehouse location: Columbus, Ohio
+        const warehouseLat = 39.9612;
+        const warehouseLng = -82.9988;
+        
+        let debounceTimer;
+
+        // Default freight rates
+        const defaultRates = {
+            rate1: 200,  // 100-399km
+            rate2: 300,  // 400-799km
+            rate3: 350,  // 800-1099km
+            rate4: 400,  // 1100-1599km
+            rate5: 500,  // 1600-2099km
+            rate6: 550   // 2100-3000km
+        };
+
+        // Load freight rates from localStorage or use defaults
+        function loadFreightRates() {
+            const saved = localStorage.getItem('freightRates');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return { ...defaultRates };
+        }
+
+        // Save freight rates to localStorage
+        function saveFreightRates(rates) {
+            localStorage.setItem('freightRates', JSON.stringify(rates));
+        }
+
+        // Current freight rates
+        let freightRates = loadFreightRates();
+
+        // Settings modal controls
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const saveSettingsBtn = document.getElementById('saveSettings');
+        const resetSettingsBtn = document.getElementById('resetSettings');
+
+        // Rate inputs
+        const rateInputs = {
+            rate1: document.getElementById('rate1'),
+            rate2: document.getElementById('rate2'),
+            rate3: document.getElementById('rate3'),
+            rate4: document.getElementById('rate4'),
+            rate5: document.getElementById('rate5'),
+            rate6: document.getElementById('rate6')
+        };
+
+        // Load current rates into inputs
+        function loadRatesIntoInputs() {
+            Object.keys(rateInputs).forEach(key => {
+                rateInputs[key].value = freightRates[key];
+            });
+        }
+
+        // Open settings modal
+        settingsBtn.addEventListener('click', () => {
+            loadRatesIntoInputs();
+            settingsModal.classList.add('show');
+        });
+
+        // Close settings modal
+        closeSettings.addEventListener('click', () => {
+            settingsModal.classList.remove('show');
+        });
+
+        // Close modal when clicking outside
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.classList.remove('show');
+            }
+        });
+
+        // Save settings
+        saveSettingsBtn.addEventListener('click', () => {
+            Object.keys(rateInputs).forEach(key => {
+                freightRates[key] = parseFloat(rateInputs[key].value) || defaultRates[key];
+            });
+            saveFreightRates(freightRates);
+            settingsModal.classList.remove('show');
+            
+            // Show confirmation
+            const originalText = saveSettingsBtn.textContent;
+            saveSettingsBtn.textContent = '✓ Saved!';
+            saveSettingsBtn.style.background = '#059669';
+            setTimeout(() => {
+                saveSettingsBtn.textContent = originalText;
+                saveSettingsBtn.style.background = '#10b981';
+            }, 2000);
+        });
+
+        // Reset to defaults
+        resetSettingsBtn.addEventListener('click', () => {
+            if (confirm('Reset all freight rates to default values?')) {
+                freightRates = { ...defaultRates };
+                saveFreightRates(freightRates);
+                loadRatesIntoInputs();
+            }
+        });
+
+        // Calculate driving distance using OSRM routing API
+        async function calculateDrivingDistance(destLat, destLng) {
+            try {
+                // OSRM API for driving distance (free, no API key needed)
+                const response = await fetch(
+                    `https://router.project-osrm.org/route/v1/driving/${warehouseLng},${warehouseLat};${destLng},${destLat}?overview=false`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Routing API request failed');
+                }
+                
+                const data = await response.json();
+                
+                if (data.routes && data.routes.length > 0) {
+                    // Distance is returned in meters, convert to km
+                    const distanceKm = data.routes[0].distance / 1000;
+                    return distanceKm;
+                } else {
+                    throw new Error('No route found');
+                }
+            } catch (error) {
+                console.error('Error calculating driving distance:', error);
+                // Fallback to straight-line distance with 1.3x multiplier (typical road distance factor)
+                return calculateStraightLineDistance(warehouseLat, warehouseLng, destLat, destLng) * 1.3;
+            }
+        }
+
+        // Calculate straight-line distance (fallback only)
+        function calculateStraightLineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth's radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Calculate freight cost based on distance using configurable rates
+        function calculateFreight(distanceKm) {
+            if (distanceKm >= 100 && distanceKm < 400) return freightRates.rate1;
+            if (distanceKm >= 400 && distanceKm < 800) return freightRates.rate2;
+            if (distanceKm >= 800 && distanceKm < 1100) return freightRates.rate3;
+            if (distanceKm >= 1100 && distanceKm < 1600) return freightRates.rate4;
+            if (distanceKm >= 1600 && distanceKm < 2100) return freightRates.rate5;
+            if (distanceKm >= 2100 && distanceKm <= 3000) return freightRates.rate6;
+            return 0; // Outside range
+        }
+
+        // Fetch address suggestions using Photon API
+        async function fetchAddressSuggestions(query) {
+            if (query.length < 3) {
+                addressSuggestions.classList.remove('show');
+                return;
+            }
+
+            try {
+                // Clean up the query - remove "Canada," prefix if present
+                let cleanQuery = query.trim();
+                cleanQuery = cleanQuery.replace(/^canada,?\s*/i, '');
+                
+                // Add Canada to the search
+                const searchQuery = cleanQuery + ' Canada';
+                
+                // Use Photon API
+                const response = await fetch(
+                    `https://photon.komoot.io/api/?q=${encodeURIComponent(searchQuery)}&limit=10`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                
+                // Filter for Canadian addresses and prioritize cities/towns
+                const canadianResults = data.features
+                    .filter(feature => {
+                        const props = feature.properties;
+                        return props.country === 'Canada' || props.countrycode === 'CA';
+                    })
+                    .sort((a, b) => {
+                        // Prioritize results with city names
+                        const aHasCity = !!a.properties.city;
+                        const bHasCity = !!b.properties.city;
+                        if (aHasCity && !bHasCity) return -1;
+                        if (!aHasCity && bHasCity) return 1;
+                        return 0;
+                    })
+                    .slice(0, 8); // Take top 8
+                
+                if (canadianResults.length > 0) {
+                    displaySuggestions(canadianResults);
+                } else {
+                    addressSuggestions.innerHTML = '<div class="suggestion-item" style="color: #fbbf24;">No results found. Try typing a city name (e.g., "Toronto", "Vancouver", "Montreal")</div>';
+                    addressSuggestions.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Error fetching addresses:', error);
+                addressSuggestions.innerHTML = '<div class="suggestion-item" style="color: #ef4444;">Connection error. Please try again.</div>';
+                addressSuggestions.classList.add('show');
+            }
+        }
+
+        // Format address display
+        function formatAddress(properties) {
+            const parts = [];
+            
+            // Build address from available components
+            if (properties.housenumber && properties.street) {
+                parts.push(properties.housenumber + ' ' + properties.street);
+            } else if (properties.street) {
+                parts.push(properties.street);
+            } else if (properties.name && properties.name !== properties.city) {
+                parts.push(properties.name);
+            }
+            
+            if (properties.city) parts.push(properties.city);
+            if (properties.state) parts.push(properties.state);
+            if (properties.postcode) parts.push(properties.postcode);
+            
+            return parts.length > 0 ? parts.join(', ') : 'Unknown Address';
+        }
+
+        // Display address suggestions
+        function displaySuggestions(suggestions) {
+            addressSuggestions.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const props = suggestion.properties;
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                
+                // Main line - prefer street address or city name
+                const mainLine = document.createElement('div');
+                mainLine.className = 'suggestion-main';
+                
+                if (props.housenumber && props.street) {
+                    mainLine.textContent = `${props.housenumber} ${props.street}`;
+                } else if (props.street) {
+                    mainLine.textContent = props.street;
+                } else if (props.name) {
+                    mainLine.textContent = props.name;
+                } else if (props.city) {
+                    mainLine.textContent = props.city;
+                } else {
+                    mainLine.textContent = 'Unknown';
+                }
+                
+                // Sub line with location details
+                const subLine = document.createElement('div');
+                subLine.className = 'suggestion-sub';
+                const subParts = [];
+                
+                if (props.city && mainLine.textContent !== props.city) {
+                    subParts.push(props.city);
+                }
+                if (props.state) {
+                    subParts.push(props.state);
+                }
+                if (props.postcode) {
+                    subParts.push(props.postcode);
+                }
+                
+                subLine.textContent = subParts.join(', ');
+                
+                item.appendChild(mainLine);
+                if (subLine.textContent) {
+                    item.appendChild(subLine);
+                }
+                
+                item.onclick = () => selectAddress(suggestion);
+                addressSuggestions.appendChild(item);
+            });
+            
+            addressSuggestions.classList.add('show');
+        }
+
+        // Select an address and calculate freight
+        async function selectAddress(address) {
+            const props = address.properties;
+            clientAddressInput.value = formatAddress(props);
+            addressSuggestions.classList.remove('show');
+            
+            // Get coordinates
+            const lat = address.geometry.coordinates[1];
+            const lon = address.geometry.coordinates[0];
+            
+            // Show loading state
+            distanceInfo.textContent = 'Calculating distance...';
+            distanceInfo.style.color = '#64748b';
+            
+            // Calculate actual driving distance
+            const distance = await calculateDrivingDistance(lat, lon);
+            
+            // Calculate freight
+            const freight = calculateFreight(distance);
+            freightCostInput.value = freight;
+            
+            // Display distance info
+            distanceInfo.textContent = `Distance: ${Math.round(distance)} km from Columbus, OH → Freight: $${freight} USD/pallet`;
+            distanceInfo.style.color = '#3b82f6';
+            
+            // Recalculate price
+            calculatePrice();
+        }
+
+        // Address input event listener with debounce
+        clientAddressInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                fetchAddressSuggestions(e.target.value);
+            }, 300);
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.address-input')) {
+                addressSuggestions.classList.remove('show');
+            }
+        });
+
+        // Fetch current USD to CAD exchange rate
+        async function fetchExchangeRate() {
+            try {
+                // Try primary API
+                const response = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await response.json();
+                
+                if (data.rates && data.rates.CAD) {
+                    usdToCAD = data.rates.CAD;
+                    fxRateDisplay.textContent = `Exchange rate: 1 USD = ${usdToCAD.toFixed(4)} CAD`;
+                    calculatePrice(); // Recalculate with new rate
+                } else {
+                    throw new Error('Invalid API response');
+                }
+            } catch (error) {
+                console.error('Error fetching exchange rate:', error);
+                // Use fallback rate
+                usdToCAD = 1.38; // Reasonable fallback for USD to CAD
+                fxRateDisplay.textContent = `Exchange rate: 1 USD = ${usdToCAD.toFixed(4)} CAD (estimated)`;
+                calculatePrice();
+            }
+        }
+
+        function validateInput(value, min, max, errorElement) {
+            if (value < min || value > max) {
+                errorElement.classList.add('show');
+                return false;
+            }
+            errorElement.classList.remove('show');
+            return true;
+        }
+
+        function calculatePrice() {
+            // Get values
+            const height = parseFloat(heightInput.value);
+            const length = parseFloat(lengthInput.value);
+            const gauge = parseFloat(gaugeInput.value);
+            const pricePerLb = parseFloat(pricePerLbInput.value);
+            const freightCost = parseFloat(freightCostInput.value) || 0;
+            const rollsPerPallet = parseFloat(rollsPerPalletInput.value) || 0;
+            const desiredGP = parseFloat(desiredGPInput.value) || 0;
+
+            // Check if all required inputs have values
+            if (!height || !length || !gauge || !pricePerLb) {
+                weightResult.textContent = '—';
+                pickupPriceResult.textContent = '—';
+                costPerPalletResult.textContent = '—';
+                freightResult.textContent = '—';
+                gpResult.textContent = '—';
+                quotedPriceResult.textContent = '—';
+                quotedPriceCAD.textContent = '—';
+                return;
+            }
+
+            // Validate inputs
+            let isValid = true;
+            isValid &= validateInput(height, 12, 30, heightError);
+            isValid &= validateInput(length, 1000, 9000, lengthError);
+            isValid &= validateInput(gauge, 50, 120, gaugeError);
+
+            if (!isValid) {
+                weightResult.textContent = '—';
+                pickupPriceResult.textContent = '—';
+                costPerPalletResult.textContent = '—';
+                freightResult.textContent = '—';
+                gpResult.textContent = '—';
+                quotedPriceResult.textContent = '—';
+                quotedPriceCAD.textContent = '—';
+                return;
+            }
+
+            // Calculate weight: H * L * Gauge / 250000 (lbs)
+            const weight = (height * length * gauge) / 250000;
+
+            // Calculate pickup price per roll
+            const pickupPrice = weight * pricePerLb;
+
+            // Calculate cost per pallet (pickup price * rolls per pallet)
+            const costPerPallet = pickupPrice * rollsPerPallet;
+
+            // Calculate customer quoted price per roll
+            // Formula: (Cost per Pallet + Freight + Desired GP) / Rolls per Pallet
+            let quotedPricePerRoll = 0;
+            if (rollsPerPallet > 0) {
+                quotedPricePerRoll = (costPerPallet + freightCost + desiredGP) / rollsPerPallet;
+            }
+
+            // Calculate CAD price
+            let quotedPriceCADValue = 0;
+            if (usdToCAD && rollsPerPallet > 0) {
+                quotedPriceCADValue = quotedPricePerRoll * usdToCAD;
+            }
+
+            // Display results
+            weightResult.textContent = weight.toFixed(2) + ' lbs';
+            pickupPriceResult.textContent = '$' + pickupPrice.toFixed(2);
+            costPerPalletResult.textContent = '$' + costPerPallet.toFixed(2);
+            freightResult.textContent = '$' + freightCost.toFixed(2);
+            gpResult.textContent = '$' + desiredGP.toFixed(2);
+            
+            if (rollsPerPallet > 0) {
+                quotedPriceResult.textContent = '$' + quotedPricePerRoll.toFixed(2) + ' USD';
+                if (usdToCAD) {
+                    quotedPriceCAD.textContent = '$' + quotedPriceCADValue.toFixed(2) + ' CAD';
+                } else {
+                    quotedPriceCAD.textContent = 'Loading CAD...';
+                }
+            } else {
+                quotedPriceResult.textContent = '—';
+                quotedPriceCAD.textContent = '—';
+            }
+        }
+
+        // Add event listeners to all inputs for live calculation
+        heightInput.addEventListener('input', calculatePrice);
+        lengthInput.addEventListener('input', calculatePrice);
+        gaugeInput.addEventListener('input', calculatePrice);
+        pricePerLbInput.addEventListener('input', calculatePrice);
+        freightCostInput.addEventListener('input', calculatePrice);
+        rollsPerPalletInput.addEventListener('input', calculatePrice);
+        desiredGPInput.addEventListener('input', calculatePrice);
+
+        // Also validate on blur
+        heightInput.addEventListener('blur', calculatePrice);
+        lengthInput.addEventListener('blur', calculatePrice);
+        gaugeInput.addEventListener('blur', calculatePrice);
+        pricePerLbInput.addEventListener('blur', calculatePrice);
+        freightCostInput.addEventListener('blur', calculatePrice);
+        rollsPerPalletInput.addEventListener('blur', calculatePrice);
+        desiredGPInput.addEventListener('blur', calculatePrice);
+
+        // Fetch exchange rate on page load
+        fetchExchangeRate();
+    </script>
+</body>
+</html>
